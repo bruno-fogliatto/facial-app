@@ -22,46 +22,52 @@
 </script>
 
 <template>
-    <div class="container">
-        <div class="image">
-            <img :src="imageSrc" alt="wellcome" />
+    <div class="main">
+        <div class="container">
+            <div class="image">
+                <img :src="imageSrc" alt="wellcome" />
+            </div>
+
+            <div class="header">
+                <h1 class="title">Bem-vindo.</h1>
+                <br>
+                <ul class="subtitle access-features">
+                    <li>
+                        <span class="icone">📸</span>
+                        <span>Captura da sua biometria facial.</span>
+                    </li>
+                    <li>
+                        <span class="icone">⚡</span>
+                        <span>Procedimento rápido.</span>
+                    </li>
+                    <li>
+                        <span class="icone">🔒</span>
+                        <span>Processo seguro.</span>
+                    </li>
+                    <li>
+                        <span class="icone">🛡️</span>
+                        <span>Controle de acesso e proteção de todos.</span>
+                    </li>
+                </ul>
+            </div>
         </div>
 
-        <div class="header">
-            <h1 class="title">Bem-vindo.</h1>
-            <br>
-            <ul class="subtitle access-features">
-                <li>
-                    <span class="icone">📸</span>
-                    <span>Captura da sua biometria facial.</span>
-                </li>
-                <li>
-                    <span class="icone">⚡</span>
-                    <span>Procedimento rápido.</span>
-                </li>
-                <li>
-                    <span class="icone">🔒</span>
-                    <span>Processo seguro.</span>
-                </li>
-                <li>
-                    <span class="icone">🛡️</span>
-                    <span>Controle de acesso e proteção de todos.</span>
-                </li>
-            </ul>
+        <div class="section">
+            <Button 
+                label="Continuar"
+                action="primary"
+                icon="→"
+                @click="steps.next()"
+            />
         </div>
     </div>
-
-    <div class="section">
-        <Button 
-            label="Continuar"
-            action="primary"
-            icon="→"
-            @click="steps.next()"
-        />
-    </div>  
 </template>
 
 <style scoped>
+    .main {
+        padding: 1rem;
+    }
+
     .container {
         display: flex;
         flex-direction: column;

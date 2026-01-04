@@ -97,40 +97,33 @@ class AwsRekognition
     public function getFeedbackMessage($feedbacks)
     {
         $messages = [
-            'face_more_than_one' => 'Mais de um rosto detectado',
-            'face_occluded'      => 'O rosto deve estar completamente visível',
-            'confidence'         => 'Não é possível analisar seu rosto com precisão',
-            'eyes_closed'        => 'Abra os olhos',
-            'photo_dark'         => 'Ambiente com pouca iluminação',
-            'photo_bright'       => 'Ambiente muito claro',
-            'photo_blurry'       => 'Imagem com pouca nitidez',
-            'remove_glasses'     => 'Retire seus óculos',
-            'face_not_aligned'   => 'Alinhe seu rosto',
-            'approach_camera'    => 'Aproxime-se da câmera',
-            'move_away_camera'   => 'Afaste-se da câmera',
-            'center_face_right'  => 'Se mova mais para a direita',
-            'center_face_left'   => 'Se mova mais para a esquerda',
-            'center_face_down'   => 'Se mova mais para baixo',
-            'center_face_high'   => 'Se mova mais para cima',
-            'eyes_error'         => 'Erro ao analisar os olhos'
+            'face_more_than_one' => 'Mais de um rosto detectado. Apenas uma pessoa deve estar na foto.',
+            'face_occluded'      => 'O rosto deve estar completamente visível, sem obstruções.',
+            'confidence'         => 'Não foi possível analisar seu rosto com precisão. Melhore a iluminação e posição.',
+            'eyes_closed'        => 'Mantenha os olhos abertos durante a captura.',
+            'photo_dark'         => 'Ambiente com pouca iluminação. Procure um local mais claro.',
+            'photo_bright'       => 'Ambiente muito claro. Reduza a intensidade da luz.',
+            'photo_blurry'       => 'Imagem com pouca nitidez. Mantenha-se parado e estável.',
+            'remove_glasses'     => 'Retire seus óculos para uma melhor captura.',
+            'face_not_aligned'   => 'Alinhe seu rosto de frente para a câmera.',
+            'approach_camera'    => 'Aproxime-se mais da câmera.',
+            'move_away_camera'   => 'Afaste-se um pouco da câmera.',
+            'center_face_right'  => 'Mova-se mais para a direita do enquadramento.',
+            'center_face_left'   => 'Mova-se mais para a esquerda do enquadramento.',
+            'center_face_down'   => 'Posicione a câmera um pouco mais para baixo.',
+            'center_face_high'   => 'Posicione a câmera um pouco mais para cima.',
+            'eyes_error'         => 'Não foi possível detectar seus olhos corretamente. Melhore a iluminação.'
         ];
 
-        // primeira chave que tiver erro a gente pega o index
-        $first_key_index = reset(array_keys(array_filter($feedbacks)));
+        $feedbacks = array_filter($feedbacks);
 
-        return $messages[$first_key_index] ?? false;
-    }
-
-    public function verifyLiveness($isSmiling, $liveness, $serious)
-    {
-        if ($isSmiling && $serious) {
-            return [false, 'Fique sério'];
+        if (empty($feedbacks)) {
+            return false;
         }
 
-        if (!$isSmiling && ($this->analysisParameters['smile'] ?? 1) && !$liveness) {
-            return [true, 'Sorria'];
-        }
+        $first_key = array_key_first($feedbacks);
+        $errorMessage = $messages[$first_key] ?? 'Foto não atende aos critérios de qualidade. Tente novamente.';
 
-        return true;
+        return $errorMessage;
     }
 }

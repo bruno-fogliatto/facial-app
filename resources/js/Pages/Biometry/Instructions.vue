@@ -7,47 +7,53 @@
 </script>
 
 <template>
-    <div class="container">
-        <div class="header">
-            <h1 class="title">Biometria Facial</h1>
-            <p class="subtitle">Siga as intruções abaixo para uma captura perfeita.</p>
+    <div class="main">
+        <div class="container">
+            <div class="header">
+                <h1 class="title">Biometria Facial</h1>
+                <p class="subtitle">Siga as intruções abaixo para uma captura perfeita.</p>
+            </div>
         </div>
-    </div>
 
-    <div class="instructions-grid">
-        <InstructionsCard 
-            icon="💡"
-            title="Iluminação Adequada"
-            description="Certifique-se de estar em um ambiente bem iluminado, evitando sombras no rosto"
-        />
-        <InstructionsCard 
-            icon="😐"
-            title="Expressão Neutra"
-            description="Mantenha uma expressão facial neutra, sem sorrir ou fazer caretas"
-        />
-        <InstructionsCard 
-            icon="👓"
-            title="Sem Acessórios"
-            description="Remova óculos, chapéus ou qualquer acessório que possa cobrir o rosto"
-        />
-        <InstructionsCard 
-            icon="📱"
-            title="Posicionamento"
-            description="Posicione o dispositivo na altura dos olhos e mantenha-se centralizado"
-        />
-    </div>
+        <div class="instructions-grid">
+            <InstructionsCard 
+                icon="💡"
+                title="Iluminação Adequada"
+                description="Certifique-se de estar em um ambiente bem iluminado, evitando sombras no rosto"
+            />
+            <InstructionsCard 
+                icon="😐"
+                title="Expressão Neutra"
+                description="Mantenha uma expressão facial neutra, sem sorrir ou fazer caretas"
+            />
+            <InstructionsCard 
+                icon="👓"
+                title="Sem Acessórios"
+                description="Remova óculos, chapéus ou qualquer acessório que possa cobrir o rosto"
+            />
+            <InstructionsCard 
+                icon="📱"
+                title="Posicionamento"
+                description="Posicione o dispositivo na altura dos olhos e mantenha-se centralizado"
+            />
+        </div>
 
-    <div class="section">
-        <Button 
-            label="Iniciar Captura"
-            action="primary"
-            icon="▶️"
-            @click="steps.next()"
-        />
+        <div class="section">
+            <Button 
+                label="Iniciar Captura"
+                action="primary"
+                icon="▶️"
+                @click="steps.next()"
+            />
+        </div>
     </div>
 </template>
 
 <style scoped>
+    .main {
+        padding: 1rem;
+    }
+    
     .container {
         display: flex;
         flex-direction: column;

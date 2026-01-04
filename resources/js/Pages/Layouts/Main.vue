@@ -1,55 +1,60 @@
 <script setup>
-    import { Head, usePage } from '@inertiajs/vue3';
-    import { ref, provide } from 'vue';
-    import { useSteps } from '@/Controllers/stepsController';
-    import { stopFaceCamera } from '@/Composable/useFaceCamera';
+    import { Head } from '@inertiajs/vue3';
+    import { ref, provide, onMounted } from 'vue';
+    import { useBiometrySteps } from '@/Composable/useBiometrySteps';
+    import { useBiometryStore } from '@/Stores/biometry'; 
 
     import GlobalHeader from "@/Components/GlobalHeader.vue";
     import GlobalFooter from "@/Components/GlobalFooter.vue";
 
-    import Instructions from "../Biometry/Instructions.vue";
-    import PhotoCapture from "../Biometry/PhotoCapture.vue";
-    import Processing from "../Biometry/Processing.vue";
-    import Review from "../Biometry/Review.vue";
-    import Result from "../Biometry/Result.vue";
-    import Wellcome from '../Biometry/Wellcome.vue';
+    import Wellcome from '@/Pages/Biometry/Wellcome.vue';
+    import Instructions from "@/Pages/Biometry/Instructions.vue";
+    import PhotoCapture from "@/Pages/Biometry/PhotoCapture.vue";
+    import Result from '@/Pages/Biometry/Result.vue';
+    import Finalization from '@/Pages/Biometry/Finalization.vue';
+
+    const props = defineProps({
+        serverStep: {
+            type: Number,
+            default: 1
+        },
+        lockedAfterCapture: {
+            type: Boolean,
+            default: false
+        },
+        access_token: {
+            type: String,
+            default: null
+        },
+        guest: {
+            type: Number,
+            default: null
+        }
+    });
 
     const state = ref({
         faceImage: null,
         documentData: null,
-        token: null,
+        token: null
     });
 
     provide('homeState', state);
+    
+    const biometryStore = useBiometryStore();
+    const steps = useBiometrySteps();
 
-    const page = usePage();
-    const serverStep = page.props.serverStep;
-    const lockedAfterCapture = page.props.lockedAfterCapture;
+    onMounted(() => {
+        biometryStore.initialize({
+            serverStep: props.serverStep,
+            lockedAfterCapture: props.lockedAfterCapture
+        });
 
-    if (page.props.access_token) {
-        sessionStorage.setItem('access_token', page.props.access_token);
-    }
+        if (props.access_token) {
+            sessionStorage.setItem('access_token', props.access_token);
+        }
 
-    if (page.props.guest) {
-        localStorage.setItem('guest', page.props.guest);
-    }
-
-    const steps = useSteps({
-        initialStep: serverStep,
-        totalSteps: 6,
-        routes: {
-            1: '/biometry',
-            2: '/biometry/instuctions',
-            3: '/biometry/capture',
-            4: '/biometry/processing',
-            5: '/biometry/review',
-            6: '/biometry/result'
-        },
-        lockedAfterCapture: lockedAfterCapture,
-        onLeaveStep: {
-            3: () => {
-                stopFaceCamera();
-            }
+        if (props.guest) {
+            localStorage.setItem('guest', props.guest);
         }
     });
 
@@ -61,17 +66,18 @@
 
     <GlobalHeader 
         :currentStep="steps.currentStep.value"
-        :totalSteps="6"
+        :totalSteps="5"
     />
 
-    <main class="main-content">
-        <Wellcome v-if="steps.currentStep.value === 1" />
-        <Instructions v-if="steps.currentStep.value === 2" />
-        <PhotoCapture v-else-if="steps.currentStep.value === 3" />
-        <Processing v-else-if="steps.currentStep.value === 4" />
-        <Review v-else-if="steps.currentStep.value === 5" />
-        <Result v-else-if="steps.currentStep.value === 6" />
-    </main>
+    <Suspense>
+        <main class="main-content">
+            <Wellcome v-if="steps.currentStep.value === 1" />
+            <Instructions v-if="steps.currentStep.value === 2" />
+            <PhotoCapture v-else-if="steps.currentStep.value === 3" />
+            <Result v-else-if="steps.currentStep.value === 4" />
+            <Finalization v-else-if="steps.currentStep.value === 5" />
+        </main>
+    </Suspense>
 
     <GlobalFooter />
 </template>
@@ -99,7 +105,6 @@
 
     .main-content {
         flex: 1;
-        padding: 2rem 1rem;
         max-width: 800px;
         margin: 0 auto;
         width: 100%;

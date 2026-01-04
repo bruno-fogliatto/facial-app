@@ -39,13 +39,13 @@ class AwsS3Service
 
             return $key;
         } catch (AwsException $ex) {
-            throw new Exception("Erro ao enviar para S3: {$ex->getMessage()}");
+            throw new Exception("Erro ao enviar para S3: {$ex->getAwsErrorMessage()}");
         }
     }
 
     public function getPublicUrl(string $key): string
     {        
-        return "https://{$this->bucket}.s3.{$this->region}.amazonaws.com/facial/{$key}";
+        return "https://{$this->bucket}.s3.{$this->region}.amazonaws.com/{$key}";
     }
 
     public function getSignetUrl(string $key, int $minutes = 10): string
@@ -70,7 +70,7 @@ class AwsS3Service
 
             return true;
         } catch (AwsException $ex) {
-            throw new Exception("Erro ao deletar imagem: {$ex->getMessage()}");
+            throw new Exception("Erro ao deletar imagem: {$ex->getAwsErrorMessage()}");
         }
     }
 }
