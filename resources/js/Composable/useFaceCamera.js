@@ -11,33 +11,46 @@ export async function startFaceCamera(videoRef, onResults)
     if (cam || initializing) return;
     initializing = true;
 
-    faceMesh = new FaceMesh({
-        locateFile: file => 
-            `https://cdn.jsdelivr.net/npm/@mediapipe/face_mesh/${file}`
-    });
-
-    faceMesh.setOptions({
-        maxNumFaces: 1,
-        refineLandmarks: true
-    });
-
-    faceMesh.onResults(onResults);
-
-    cam = new Camera(videoRef.value, {
-        onFrame: async () => {
-            if (!faceMesh) return;
-
-            const now = performance.now();
-            if (now - lastFrame < 80) return; //~12 FPS
-
-            await faceMesh.send({
-                image: videoRef.value
-            })
-        }
-    });
-
-    await cam.start();
-    initializing = false;
+    try {
+        faceMesh = new FaceMesh({
+            locateFile: file => 
+                `https://cdn.jsdelivr.net/npm/@mediapipe/face_mesh/${file}`
+        });
+    
+        faceMesh.setOptions({
+            maxNumFaces: 1,
+            refineLandmarks: true
+        });
+    
+        faceMesh.onResults(onResults);
+    
+        cam = new Camera(videoRef.value, {
+            onFrame: async () => {    
+                const video = videoRef.value;
+    
+                if (
+                    !faceMesh ||
+                    !video ||
+                    !video.srcObject ||
+                    video.readyState < HTMLMediaElement.HAVE_CURRENT_DATA ||
+                    video.videoWidth === 0 ||
+                    video.videoHeight === 0
+                ) return;
+    
+                const now = performance.now();
+                if (now - lastFrame < 80) return; //~12 FPS
+                lastFrame = now;
+    
+                await faceMesh.send({
+                    image: video
+                })
+            }
+        });
+    
+        await cam.start();
+    } finally {
+        initializing = false;
+    }
 }
 
 export async function stopFaceCamera(videoRef)
@@ -47,9 +60,10 @@ export async function stopFaceCamera(videoRef)
         cam = null;
     }
 
-    if (videoRef?.value?.srcObject) {
-        videoRef.value.srcObject.getTracks().forEach(t => t.stop());
-        videoRef.value.srcObject = null;
+    const video = videoRef?.value;
+    if (video?.srcObject) {
+        video.srcObject.getTracks().forEach(t => t.stop());
+        video.srcObject = null;
     }
 
     if (faceMesh) {

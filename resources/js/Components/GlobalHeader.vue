@@ -17,38 +17,23 @@
 
   onBeforeMount(() => {
     const images = JSON.parse(localStorage.getItem('images'));
-    console.log(images);
+
     if (images?.logo2) {
       imageSrc.value = images.logo2;
     }
   });
-
-  // function goBack() {
-  //   if (!steps) return;
-  //   steps.back();
-  // }
 </script>
 
 <template>
   <header class="global-header">
     <div class="header-content">
-      <!-- <button 
-        v-if="currentStep > 1" 
-        class="back-button" 
-        @click="goBack()"
-      >
-        ← Voltar
-      </button> -->
-      
-      <div class="logo-section">
-        <div class="logo">
-          <div class="shield-icon">
-           <img class="logo-image" :src="imageSrc" alt="logo"/>
-          </div>
-          <span class="logo-text"> Marina 
-            <span class="logo-subtext">Blue Fox</span>
-          </span>
+      <div class="logo">
+        <div class="shield-icon">
+          <img class="logo-image" :src="imageSrc" alt="logo"/>
         </div>
+        <span class="logo-text"> Marina 
+          <span class="logo-subtext">Blue Fox</span>
+        </span>
       </div>
       
       <div class="step-info">
@@ -67,7 +52,6 @@
     position: sticky;
     top: 0;
     z-index: 100;
-    overflow: hidden;
   }
 
   .header-content {
@@ -79,50 +63,24 @@
     gap: 2rem;
   }
 
-  .back-button {
-    background: none;
-    border: none;
-    color: #045781;
-    font-size: 1rem;
-    cursor: pointer;
-    padding: 0.5rem 1rem;
-    border-radius: 6px;
-    transition: background-color 0.2s;
-  }
-
-  .back-button:hover {
-    background-color: #f8f9fa;
-  }
-
-  .logo-section {
-    flex: 1;
-    display: flex;
-    justify-content: center;
-  }
-
   .logo {
     display: flex;
     align-items: center;
-    gap: 0.5rem;
-  }
-
-  .shield-icon {
-    font-size: 2rem;
-    color: #045781;
+    gap: 0.75rem;
   }
 
   .logo-image {
-    width: 64px;
-    height: auto;
+    width: 48px;
+    height: 48px;
     object-fit: contain;
     border-radius: 8px;
-    vertical-align: center;
   }
 
   .logo-text {
-    font-size: 1.5rem;
+    font-size: 1.3rem;
     font-weight: bold;
     color: #045781;
+    white-space: nowrap;
   }
 
   .logo-subtext {
@@ -130,92 +88,76 @@
   }
 
   .step-info {
-    flex: 1;
-    text-align: right;
     display: flex;
     flex-direction: column;
     align-items: flex-end;
-    gap: 0.25rem;
+    gap: 0.5rem;
+    min-width: 200px;
   }
 
   .step-title {
-    font-size: 1.1rem;
+    font-size: 0.95rem;
     color: #333;
-    margin-bottom: 0.5rem;
+    font-weight: 600;
+    white-space: nowrap;
   }
 
   @media (max-width: 768px) {
     .global-header {
-      padding: 1rem;
+      padding: 0.875rem 1rem;
     }
-    
+
     .header-content {
-      flex-direction: column;
       gap: 1rem;
     }
-    
-    .logo-section,
-    .step-info {
-      flex: none;
+
+    .logo-image {
+      width: 40px;
+      height: 40px;
     }
-    
+
+    .logo-text {
+      font-size: 1.1rem;
+    }
+
     .step-info {
-      text-align: center;
-      width: 100%;
+      min-width: 150px;
+    }
+
+    .step-title {
+      font-size: 0.85rem;
     }
   }
 
   @media (max-width: 480px) {
-
     .global-header {
-      padding: 0.5rem 0.75rem;
+      padding: 0.75rem 0.875rem;
     }
 
     .header-content {
-      flex-direction: column;
-      align-items: stretch;
-      gap: 0.4rem;
-    }
-
-    /* Botão voltar menor */
-    .back-button {
-      font-size: 0.85rem;
-      padding: 0.25rem 0.5rem;
-    }
-
-    .logo-section {
-      justify-content: center;
-    }
-
-    /* Logo menor */
-    .logo {
-      gap: 0.35rem;
+      gap: 0.75rem;
     }
 
     .logo-image {
       width: 36px;
-      border-radius: 6px;
+      height: 36px;
     }
 
     .logo-text {
       font-size: 1rem;
-      line-height: 1.1;
     }
 
     .logo-subtext {
       font-size: 0.95rem;
     }
 
-    /* Step info mais compacto */
     .step-info {
-      gap: 0.2rem;
-      align-items: flex-end;
+      min-width: 130px;
+      gap: 0.35rem;
     }
 
     .step-title {
       font-size: 0.8rem;
-      margin-bottom: 0.2rem;
     }
   }
-
 </style>

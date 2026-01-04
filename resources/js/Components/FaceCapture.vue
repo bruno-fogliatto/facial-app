@@ -33,7 +33,7 @@
   const isCounting = ref(false);
   const flash = ref(false);
   const stableFrames = ref(0);
-
+  const isCapturing = ref(false);
   const imageSrc = ref(props.icon);
   
 
@@ -47,6 +47,9 @@
   let captureLocked = false;
 
   const capturePhoto = () => {
+    // Bloqueia se hpa estiver capturando (previne timeout de disparar)
+    if (isCapturing.value) return;
+
     const video = videoElement.value;
     const canvas = canvasElement.value;
     const ctx = canvas.getContext('2d');
@@ -66,17 +69,15 @@
     )
 
     const image = canvas.toDataURL('image/jpeg', 0.9);
+
+    // Marca como capturando (bloqueia novas tentativas)
+    isCapturing.value = true;
+
+    // Desativa liveness (para timeout não resetar)
+    deactivateLiveness();
+
     emits('photoCaptured', image);
   };
-
-  watch(timeoutExpired, (v) => {
-    if (v) {
-      setTimeout(() => {
-        timeoutExpired.value = false;
-        resetLiveness();
-      }, 20000);
-    }
-  });
 
   watch(state, (newState) => {
     if (newState === 'READY') {
@@ -166,6 +167,17 @@
     }, CAPTURE_DELAY);
   };
 
+  function resetCapture() {
+    isCapturing.value = false;
+    captureLocked = false;
+    clearAllTimers();
+    resetLiveness();
+  };
+
+  defineExpose({
+    resetCapture
+  });
+
   onBeforeMount(() => {
     const images = JSON.parse(localStorage.getItem('images'));
     if (images?.camera) {
@@ -175,8 +187,14 @@
 
   onMounted(async () => {
     try {
+      resetLiveness();
+      clearAllTimers();
+      isCapturing.value = false;
+      captureLocked = false;
+
       shutterSound = new Audio(shutterMP3);
       shutterSound.volume = 0.7;
+      
       await startFaceCamera(videoElement, processFace);
     } catch (err) {
       alert('Não foi possível acessar a câmera. Verifique as permissões.');
@@ -185,6 +203,7 @@
 
   onBeforeUnmount(async () => {
     deactivateLiveness();
+    clearAllTimers();
     stopFaceCamera(videoElement);
   });
 </script>
@@ -234,7 +253,7 @@
 
     <div class="flash-overlay" v-if="flash"></div>
 
-    <div class="capture-instructions">
+    <div v-if="!isCapturing" class="capture-instructions">
       <p class="instruction-text" :class="{ error: timeoutExpired, success: state === 'READY' }">
         {{ timeoutExpired ? statesText.TIMEOUT : statesText[state] }}
       </p>
