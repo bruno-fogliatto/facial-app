@@ -47,7 +47,7 @@
   let captureLocked = false;
 
   const capturePhoto = () => {
-    // Bloqueia se hpa estiver capturando (previne timeout de disparar)
+    // Bloqueia se ja estiver capturando (previne timeout de disparar)
     if (isCapturing.value) return;
 
     const video = videoElement.value;
@@ -296,6 +296,7 @@
     width: 100%;
     height: 100%;
     object-fit: cover;
+    transform: scaleX(-1);
   }
 
   .capture-canvas {
